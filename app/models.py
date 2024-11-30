@@ -2,8 +2,8 @@ from app import db
 import enum
 
 class Gender(enum.Enum):
-    MALE = "Male"
-    FEMALE = "Female"
+    MALE = "male"
+    FEMALE = "female"
 
 class ActivityLevel(enum.Enum):
     sedentary = "Sedentary"

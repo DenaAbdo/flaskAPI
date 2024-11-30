@@ -22,9 +22,9 @@ def calculate_bmr():
     user = User.query.order_by(User.id.desc()).first()
 
     if user:
-        if user.gender == Gender.FEMALE:  # For Female BMR calculation
+        if user.gender == Gender.FEMALE.value:  # For Female BMR calculation
             bmr = 447.593 + (9.247 * user.weight) + (3.098 * user.height) - (4.330 * user.age)
-        elif user.gender == Gender.MALE:  # For Male BMR calculation
+        elif user.gender == Gender.MALE.value:  # For Male BMR calculation
             bmr = 88.362 + (13.397 * user.weight) + (4.799 * user.height) - (5.677 * user.age)
         else:
             return jsonify({"error": "Invalid gender"})
