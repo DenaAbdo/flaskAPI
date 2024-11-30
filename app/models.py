@@ -5,7 +5,6 @@ class Gender(enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
 
-# Add description in the frontend for each level so the user can know what to choose from them
 class ActivityLevel(enum.Enum):
     sedentary = "Sedentary"
     lightly_active = "Lightly Active"
@@ -23,16 +22,9 @@ activity_multipliers = {
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    weight = db.Column(db.Float)
-    height = db.Column(db.Float)
-    age = db.Column(db.Integer)
+    name = db.Column(db.String(80), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(6), nullable=False)
-    activity_level = db.Column(db.String(20), nullable=False)    
-def __init__(self, name, weight, height, age, gender, activity_level):
-        self.name = name
-        self.weight = weight
-        self.height = height
-        self.age = age
-        self.gender = gender
-        self.activity_level = activity_level
+    activity_level = db.Column(db.String(20), nullable=False)
