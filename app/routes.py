@@ -18,23 +18,24 @@ def submit_form():
 
 @bp.route('/calculate-bmr', methods=['GET'])
 def calculate_bmr(user):
-    if user:
-        if user.gender == Gender.FEMALE.value:  # For Female BMR calculation
-            bmr = 447.593 + (9.247 * user.weight) + (3.098 * user.height) - (4.330 * user.age)
-        elif user.gender == Gender.MALE.value:  # For Male BMR calculation
-            bmr = 88.362 + (13.397 * user.weight) + (4.799 * user.height) - (5.677 * user.age)
-        else:
-            return jsonify({"error": "Invalid gender"})
-        
-        return bmr
+    if user.gender == Gender.FEMALE.value:  # For Female BMR calculation
+        bmr = (10 * user.weight) + (6.25 * user.height) - (5 * user.age) - 161
+    elif user.gender == Gender.MALE.value:  # For Male BMR calculation
+        bmr = (10 * user.weight) + (6.25 * user.height) - (5 * user.age) + 5
     else:
-        return jsonify({"error": "No user data found!"})
+        return jsonify({"error": "Invalid gender"})
+    
+    return bmr
+
 
 @bp.route('/calculate-tdee', methods=['GET'])
 def calculate_tdee():
     # Get the latest user data
-    user = User.query.order_by(User.id.desc()).first()
-    
+    user_id = request.args.get('user_id')  # Get user_id from the query params
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    user = User.query.get(user_id)     
     if user:
         # Convert activity level string to enum
         try:

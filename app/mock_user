@@ -1,0 +1,16 @@
+from app.routes import calculate_bmr
+
+
+class MockUser:
+    def __init__(self, weight, height, age, gender):
+        self.weight = weight
+        self.height = height
+        self.age = age
+        self.gender = gender
+
+# Create a mock user instance
+mock_user = MockUser(weight=70, height=175, age=25, gender="male")
+
+# Call the calculate_bmr function with the mock user
+bmr = calculate_bmr(mock_user)
+print(f"BMR: {bmr}")
