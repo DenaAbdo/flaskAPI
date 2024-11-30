@@ -1,13 +1,12 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models import User, Gender, activity_multipliers
+from app.models import User, Gender, activity_multipliers, ActivityLevel
 
 bp = Blueprint('routes', __name__)
 
 @bp.route('/')
 def home():
     return "Hello from Flask!"
-
 
 @bp.route('/submit-form', methods=['POST'])
 def submit_form():
@@ -18,9 +17,7 @@ def submit_form():
     return jsonify({"message": "Data saved successfully!"})
 
 @bp.route('/calculate-bmr', methods=['GET'])
-def calculate_bmr():
-    user = User.query.order_by(User.id.desc()).first()
-
+def calculate_bmr(user):
     if user:
         if user.gender == Gender.FEMALE.value:  # For Female BMR calculation
             bmr = 447.593 + (9.247 * user.weight) + (3.098 * user.height) - (4.330 * user.age)
@@ -29,7 +26,7 @@ def calculate_bmr():
         else:
             return jsonify({"error": "Invalid gender"})
         
-        return jsonify({"bmr": bmr})
+        return bmr
     else:
         return jsonify({"error": "No user data found!"})
 
@@ -39,13 +36,24 @@ def calculate_tdee():
     user = User.query.order_by(User.id.desc()).first()
     
     if user:
-        # Get the multiplier based on the user's activity level (enum value)
-        multiplier = activity_multipliers.get(user.activity_level, 1.2)  # Default to sedentary if not found
-        bmr = calculate_bmr()  # Call the BMR function to get the user's BMR
+        # Convert activity level string to enum
+        try:
+            activity_level_enum = ActivityLevel[user.activity_level.lower()]
+        except KeyError:
+            activity_level_enum = ActivityLevel.sedentary  # Default to sedentary if not found
+
+        # Get the multiplier for the activity level
+        multiplier = activity_multipliers.get(activity_level_enum, 1.2)
+        
+        # Calculate BMR
+        bmr = calculate_bmr(user)  # Pass the user object and get BMR value
+
+        # Calculate TDEE
         tdee = bmr * multiplier
         return jsonify({"tdee": tdee})
     else:
         return jsonify({"error": "No user data found!"})
+
 
 @bp.route('/add_user', methods=['POST'])
 def add_user():
